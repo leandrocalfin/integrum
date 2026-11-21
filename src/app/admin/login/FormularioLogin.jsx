@@ -65,6 +65,7 @@ export default function FormularioLogin() {
             required
             autoComplete="username"
             inputMode="email"
+            maxLength={254}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="usuario@ejemplo.com"
@@ -80,6 +81,7 @@ export default function FormularioLogin() {
             type="password"
             required
             autoComplete="current-password"
+            maxLength={200}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••••"

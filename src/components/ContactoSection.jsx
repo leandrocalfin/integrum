@@ -205,6 +205,7 @@ export default function ContactoSection({ contacto }) {
                     id="contacto-nombre"
                     type="text"
                     required
+                    maxLength={100}
                     value={form.nombre}
                     onChange={cambiar("nombre")}
                     placeholder="Ej: Marcela Benítez"
@@ -222,6 +223,7 @@ export default function ContactoSection({ contacto }) {
                     id="contacto-telefono"
                     type="tel"
                     required
+                    maxLength={30}
                     value={form.telefono}
                     onChange={cambiar("telefono")}
                     placeholder="Ej: 2966 00-0000"
@@ -241,6 +243,7 @@ export default function ContactoSection({ contacto }) {
                   id="contacto-correo"
                   type="email"
                   required
+                  maxLength={254}
                   value={form.correo}
                   onChange={cambiar("correo")}
                   placeholder="ejemplo@correo.com"
@@ -295,11 +298,15 @@ export default function ContactoSection({ contacto }) {
                   id="contacto-mensaje"
                   rows={4}
                   required
+                  maxLength={600}
                   value={form.mensaje}
                   onChange={cambiar("mensaje")}
                   placeholder="Contanos brevemente el motivo (sin datos clínicos detallados)..."
                   className={`mt-1.5 h-20 resize-y sm:mt-2 sm:h-auto ${inputBase}`}
                 />
+                <p className="mt-1 text-right text-[11px] text-slate-500">
+                  {form.mensaje.length}/600 caracteres
+                </p>
               </div>
 
               {/* Aviso de privacidad */}
