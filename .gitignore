@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# archivo de entorno de desarrollo local (no forma parte del sitio)
+AGENTS.md
+
+# artefactos de build / despliegue
+/.open-next/
+/.wrangler/
