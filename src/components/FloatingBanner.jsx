@@ -138,7 +138,7 @@ export default function FloatingBanner({ banners }) {
           <img
             src={aviso.imagen_url}
             alt={aviso.titulo}
-            className="h-36 w-full rounded-2xl object-cover"
+            className="h-36 w-full rounded-2xl object-contain"
           />
         ) : null}
         <div className="mt-4">
