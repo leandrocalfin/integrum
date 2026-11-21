@@ -741,6 +741,18 @@ export async function guardarBanner(formData) {
     const id = idBruto ? Number(idBruto) : null;
     if (id && !Number.isInteger(id)) throw new Error("Aviso inexistente");
 
+    // Solo se permite un aviso a la vez: si ya existe uno y no estamos
+    // editando, se rechaza antes de subir ninguna imagen.
+    if (!id) {
+      const { count, error: countError } = await sb
+        .from("site_banners")
+        .select("id", { count: "exact", head: true });
+      if (countError) throw new Error(countError.message);
+      if (count > 0) {
+        throw new Error("Ya hay un aviso cargado. Editá o eliminá el aviso actual antes de agregar otro.");
+      }
+    }
+
     const titulo = maxLen("Título", formData.get("titulo"), 100);
     const descripcion = maxLen("Descripción", formData.get("descripcion"), 300);
     const palabras = descripcion.split(/\s+/).filter(Boolean).length;

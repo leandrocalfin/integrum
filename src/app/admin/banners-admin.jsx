@@ -73,6 +73,21 @@ export default function BannersAdmin({ banners, onSaved }) {
 
   return (
     <div className="flex flex-col gap-5">
+      {!form.id && banners?.length > 0 ? (
+        <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-4">
+          <p className="text-[13px] font-semibold text-sky-300">Ya hay un aviso cargado</p>
+          <p className="mt-1 text-[12px] leading-5 text-slate-300">
+            Solo puede haber un aviso a la vez. Editá el actual o eliminalo desde la lista para crear uno nuevo.
+          </p>
+          <button
+            type="button"
+            onClick={() => editar(banners[0])}
+            className="mt-3 inline-flex h-9 items-center rounded-xl bg-sky-500/15 px-4 text-[12px] font-bold text-sky-300 hover:bg-sky-500/25"
+          >
+            Editar aviso actual
+          </button>
+        </div>
+      ) : (
       <form onSubmit={guardar} className="rounded-xl border border-white/10 bg-[#082F49]/60 p-4">
         <h3 className="font-display text-[13px] font-bold uppercase tracking-[0.18em] text-sky-400">
           {form.id ? "Editar aviso" : "Agregar aviso"}
@@ -137,6 +152,7 @@ export default function BannersAdmin({ banners, onSaved }) {
           </p>
         )}
       </form>
+      )}
 
       <ul className="flex flex-col gap-2">
         {(banners ?? []).map((b) => (
