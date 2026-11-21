@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "integram-odontologia",
+  "name": "integrum",
   "main": ".open-next/worker.js",
   "upload_source_maps": true,
   "compatibility_date": "2026-11-20",
@@ -21,7 +21,7 @@
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "integram-odontologia"
+      "service": "integrum"
     }
   ],
   "durable_objects": {
