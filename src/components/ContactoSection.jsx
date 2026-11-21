@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import Script from "next/script";
 import { DEFAULT_CONTENT, buildWhatsAppTurnos } from "@/lib/contenido";
+import { verificarConsulta } from "@/app/contacto-actions";
 
 const soloDigitos = (valor) => String(valor ?? "").replace(/\D/g, "");
 
@@ -142,14 +144,39 @@ export default function ContactoSection({ contacto }) {
     mensaje: "",
   });
   const [enviado, setEnviado] = useState(false);
+  const [error, setError] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef(null);
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+  const alCargarTurnstile = () => {
+    if (typeof window === "undefined" || !window.turnstile || !turnstileRef.current) return;
+    window.turnstile.render(turnstileRef.current, {
+      sitekey: siteKey,
+      callback: setTurnstileToken,
+      "error-callback": () => setTurnstileToken(""),
+      "expired-callback": () => setTurnstileToken(""),
+    });
+  };
 
   const cambiar = (campo) => (e) => {
     setForm((f) => ({ ...f, [campo]: e.target.value }));
     setEnviado(false);
+    setError("");
   };
 
-  const enviar = (e) => {
+  const enviar = async (e) => {
     e.preventDefault();
+    if (enviando) return;
+    setEnviando(true);
+    setError("");
+    const res = await verificarConsulta(turnstileToken || null);
+    if (!res?.ok) {
+      setError(res?.error ?? "No se pudo enviar la consulta.");
+      setEnviando(false);
+      return;
+    }
     setEnviado(true);
     setForm({
       nombre: "",
@@ -158,6 +185,11 @@ export default function ContactoSection({ contacto }) {
       motivo: motivos[0],
       mensaje: "",
     });
+    setTurnstileToken("");
+    if (typeof window !== "undefined" && window.turnstile && turnstileRef.current) {
+      window.turnstile.reset(turnstileRef.current);
+    }
+    setEnviando(false);
   };
 
   const datosSede = [
@@ -356,12 +388,30 @@ export default function ContactoSection({ contacto }) {
                 </div>
               )}
 
+              {error && (
+                <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700">
+                  {error}
+                </p>
+              )}
+
+              {siteKey && (
+                <div>
+                  <div ref={turnstileRef} className="flex justify-center" />
+                  <Script
+                    src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+                    strategy="afterInteractive"
+                    onLoad={alCargarTurnstile}
+                  />
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#0b2233] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#123249] sm:px-5 sm:py-3 sm:text-sm"
+                disabled={enviando || (Boolean(siteKey) && !turnstileToken)}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#0b2233] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#123249] disabled:cursor-not-allowed disabled:opacity-60 sm:px-5 sm:py-3 sm:text-sm"
               >
                 <IconoCampo tipo="enviar" className="h-4 w-4" />
-                Enviar Consulta
+                {enviando ? "Enviando…" : "Enviar Consulta"}
               </button>
             </form>
           </div>
