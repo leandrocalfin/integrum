@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Script from "next/script";
 import { DEFAULT_CONTENT, buildWhatsAppTurnos } from "@/lib/contenido";
 import { verificarConsulta } from "@/app/contacto-actions";
+import { useTurnstile } from "@/lib/useTurnstile";
 
 const soloDigitos = (valor) => String(valor ?? "").replace(/\D/g, "");
 
@@ -146,19 +147,13 @@ export default function ContactoSection({ contacto }) {
   const [enviado, setEnviado] = useState(false);
   const [error, setError] = useState("");
   const [enviando, setEnviando] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState("");
-  const turnstileRef = useRef(null);
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-
-  const alCargarTurnstile = () => {
-    if (typeof window === "undefined" || !window.turnstile || !turnstileRef.current) return;
-    window.turnstile.render(turnstileRef.current, {
-      sitekey: siteKey,
-      callback: setTurnstileToken,
-      "error-callback": () => setTurnstileToken(""),
-      "expired-callback": () => setTurnstileToken(""),
-    });
-  };
+  const {
+    containerRef: turnstileRef,
+    token: turnstileToken,
+    onReady: alCargarTurnstile,
+    resetWidget,
+  } = useTurnstile(siteKey);
 
   const cambiar = (campo) => (e) => {
     setForm((f) => ({ ...f, [campo]: e.target.value }));
@@ -185,10 +180,7 @@ export default function ContactoSection({ contacto }) {
       motivo: motivos[0],
       mensaje: "",
     });
-    setTurnstileToken("");
-    if (typeof window !== "undefined" && window.turnstile && turnstileRef.current) {
-      window.turnstile.reset(turnstileRef.current);
-    }
+    resetWidget();
     setEnviando(false);
   };
 
@@ -400,7 +392,7 @@ export default function ContactoSection({ contacto }) {
                   <Script
                     src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
                     strategy="afterInteractive"
-                    onLoad={alCargarTurnstile}
+                    onReady={alCargarTurnstile}
                   />
                 </div>
               )}

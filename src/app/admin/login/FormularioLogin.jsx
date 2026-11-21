@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Script from "next/script";
 import { loginAction } from "../actions";
+import { useTurnstile } from "@/lib/useTurnstile";
 
 export default function FormularioLogin() {
   const [email, setEmail] = useState("");
@@ -10,18 +11,7 @@ export default function FormularioLogin() {
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-  const [turnstileToken, setTurnstileToken] = useState("");
-  const turnstileRef = useRef(null);
-
-  const onScriptLoad = () => {
-    if (typeof window === "undefined" || !window.turnstile || !turnstileRef.current) return;
-    window.turnstile.render(turnstileRef.current, {
-      sitekey: siteKey,
-      callback: setTurnstileToken,
-      "error-callback": () => setTurnstileToken(""),
-      "expired-callback": () => setTurnstileToken(""),
-    });
-  };
+  const { containerRef, token: turnstileToken, onReady } = useTurnstile(siteKey);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -96,11 +86,11 @@ export default function FormularioLogin() {
         {siteKey && (
           <div>
             {/* Widget Turnstile: solo se carga si NEXT_PUBLIC_TURNSTILE_SITE_KEY está configurada */}
-            <div ref={turnstileRef} className="flex justify-center" />
+            <div ref={containerRef} className="flex justify-center" />
             <Script
               src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
               strategy="afterInteractive"
-              onLoad={onScriptLoad}
+              onReady={onReady}
             />
           </div>
         )}
