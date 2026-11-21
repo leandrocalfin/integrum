@@ -195,7 +195,7 @@ export default function Panel({ contenido, email }) {
         <div
           role="status"
           aria-live="polite"
-          className="fixed top-6 right-4 z-50 flex items-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-500/15 px-4 py-2.5 text-[13px] font-semibold text-emerald-300 shadow-lg backdrop-blur-sm xl:absolute xl:right-6 xl:top-6"
+          className="fixed top-6 right-4 z-50 flex items-center gap-2 rounded-xl border border-emerald-600 bg-emerald-800 px-4 py-2.5 text-[13px] font-semibold text-white shadow-xl xl:absolute xl:right-6 xl:top-6"
         >
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="m5 12 5 5L20 7" />
